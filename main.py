@@ -369,3 +369,7 @@ class MainWindow(QtWidgets.QWidget):
     def mouseReleaseEvent(self, event):
         if hasattr(self, 'oldPos'):
             delattr(self, 'oldPos')
+
+
+if __name__ == "__main__":
+    print("Please run the 'start.py' file...")

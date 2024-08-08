@@ -1,2 +1,3 @@
-# laravel-bot
-Automatized admin panel for laravel. Setup your laravel backend with ease.
+# Laravel Bot
+
+Otomatik bir şekilde laravel admin paneli oluşturmaya yarayan bot.

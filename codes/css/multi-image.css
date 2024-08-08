@@ -1,0 +1,157 @@
+.cursor {
+    cursor: all-scroll,
+}
+/* Style for image cards */
+.image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.image-card {
+    width: 350px;
+    height: 350px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: all-scroll;
+    position: relative;
+}
+
+.image-card img {
+    width: auto; /* Display the entire image without cropping or zooming */
+    height: auto; /* Display the entire image without cropping or zooming */
+    max-width: 100%; /* Ensure the image does not exceed the container's width */
+    max-height: 100%; /* Ensure the image does not exceed the container's height */
+}
+
+/* Hide the default checkbox */
+input[type=checkbox] {
+    display: none;
+}
+
+/* Style for the custom checkbox */
+.checkbox-container {
+    position: relative;
+    display: inline-block;
+    align-items: center; /* Align items vertically */
+    width: 40px;
+    height: 24px;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Style the slider's thumb */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+/* Checked state */
+input[type=checkbox]:checked + .slider {
+    background-color: #2196F3;
+}
+
+/* Move the thumb to the right when checked */
+input[type=checkbox]:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+/* Checkbox text */
+.checkbox-container .checkbox-text {
+margin-left: 46px; /* Adjust as needed */
+white-space: nowrap; 
+}
+
+input[type="text"],
+input[type="number"],
+.accordion
+textarea {
+outline: none;
+box-shadow: none !important;
+border: 1px solid #ccc !important;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+padding-right: 0rem;
+color: var(--bs-breadcrumb-divider-color);
+content: var(--bs-breadcrumb-divider, "/");
+}
+
+select,
+textarea {
+outline: none;
+box-shadow: none !important;
+border: 1px solid #ccc !important;
+}
+
+
+@media (min-width: 768px) {
+[class*="scaling"] {
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
+    -webkit-transition-delay: 0s;
+    -moz-transition-delay: 0s;
+    transition-delay: 0s;
+}
+
+[class*="scaling"]:hover {
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    transform: scale(1.05);
+
+    position: relative;
+    z-index: 50;
+}
+
+[class*="rising"] {
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    transition: all 0.2s;
+    -webkit-transition-delay: 0s;
+    -moz-transition-delay: 0s;
+    transition-delay: 0s;
+}
+
+[class*="rising"]:hover {
+    -webkit-transform: translate(0, -10px);
+    -moz-transform: translate(0, -10px);
+    transform: translate(0, -10px);
+    position: relative;
+    z-index: 50;
+}
+}

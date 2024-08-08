@@ -1,0 +1,26 @@
+if ($request->hasFile('image_path')) {
+    // Get the original name of the file
+    $originalName = $request->image_path->getClientOriginalName();
+
+    // Generate a unique name using the original file name
+    $imageName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME), '-') . '_' . time() . '.' . $request->image_path->extension();
+    $request->image_path->move(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}'), $imageName);
+
+    $validatedData['image_path'] = $imageName;
+
+    $resizedImage100px = Image::make(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $imageName));
+    $resizedImage100px->resize(100, 100, function ($constraint) {
+        $constraint->aspectRatio(); // Maintain aspect ratio
+        $constraint->upsize(); // Prevent upsizing
+    });
+
+    // Get the filename without extension
+    $filenameWithoutExtension = pathinfo($imageName, PATHINFO_FILENAME);
+
+    // Get the extension
+    $extension = pathinfo($imageName, PATHINFO_EXTENSION);
+
+    // Save the resized image with _resized appended to the filename
+    $resizedImageName100px = $filenameWithoutExtension . '_resized100px.' . $extension;
+    $resizedImage100px->save(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/resized/' . $resizedImageName100px));
+}

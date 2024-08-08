@@ -1,0 +1,8 @@
+Route::get('/{model_title_lower}/{{model_title_lower}_id}/images', [{model_title}Controller::class, 'imagesIndex'])->name('{model_name_slug}.images.list');
+Route::get('/{model_title_lower}/{{model_title_lower}_id}/images/fetch', [{model_title}Controller::class, 'imagesFetch'])->name('{model_name_slug}.images.fetch');
+Route::post('/{model_title_lower}/{{model_title_lower}_id}/images/create', [{model_title}Controller::class, 'imagesStore'])->name('{model_name_slug}.images.store');
+Route::post('/{model_title_lower}/images/upload', [{model_title}Controller::class, 'imagesUpload'])->name('{model_name_slug}.images.upload');
+Route::delete('/{model_title_lower}/{{model_title_lower}_id}/images/delete/{id}', [{model_title}Controller::class, 'imagesDelete'])->name('{model_name_slug}.images.delete');
+Route::delete('/{model_title_lower}/images/delete/{imagePath}', [{model_title}Controller::class, 'imagesDeleteWithPath'])->name('{model_name_slug}.images.delete.path');
+Route::post('/{model_title_lower}/{{model_title_lower}_id}/images/move', [{model_title}Controller::class, 'imagesMove'])->name('{model_name_slug}.images.move');
+Route::post('/{model_title_lower}/images/move', [{model_title}Controller::class, 'imagesMove'])->name('{model_name_slug}.images.move.id');

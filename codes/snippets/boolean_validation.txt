@@ -1,0 +1,1 @@
+$validatedData['{field_name}'] = $request->{field_name} == 'on' ? true : false;

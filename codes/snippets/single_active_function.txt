@@ -1,0 +1,25 @@
+public function changeActive($id)
+{
+    ${model_name_slug} = {model_title}::find($id);
+    $active = ${model_name_slug}->active ? true : false;
+    if ($active)
+    {
+        $last{model_title} = {model_title}::where('id', '!=', $id)->orderBy('created_at', 'desc')->first();
+        if ($last{model_title}) {
+            $last{model_title}->update(['active' => true]);
+            ${model_name_slug}->update(['active' => false]);
+        }
+        else
+        {
+            session()->flash('error', 'En az 1 aktif kayıt bulunmalı.');
+            return response()->json(['success' => false, 'message' => 'En az 1 aktif kayıt bulunmalı.']);
+        }
+    }
+    else
+    {
+        {model_title}::query()->update(['active' => false]);
+        ${model_name_slug}->update(['active' => true]);
+    }
+
+    return response()->json(['success' => true, 'active' => $active]);
+}

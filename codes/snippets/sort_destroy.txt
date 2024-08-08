@@ -1,0 +1,1 @@
+{model_title}::where('sort_order', '>', ${model_name_slug}->sort_order)->decrement('sort_order');

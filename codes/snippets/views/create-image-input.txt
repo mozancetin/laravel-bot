@@ -1,0 +1,1 @@
+<input type="hidden" id="{model_name_slug}-value" value="{{ isset(${model_name_slug}) ? 'true' : 'false' }}">

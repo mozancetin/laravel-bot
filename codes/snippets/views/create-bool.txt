@@ -1,0 +1,8 @@
+<div class="checkbox-container">
+    <label class="checkbox-container">
+        <input type="checkbox" name="{field_slug}" {{ isset(${model_name_slug}) && ${model_name_slug}->{field_slug} ? 'checked' : '' }}>
+        <span class="slider round"></span>
+        <span class="checkbox-text">{field_name}</span>
+    </label>
+</div>
+<br><br>

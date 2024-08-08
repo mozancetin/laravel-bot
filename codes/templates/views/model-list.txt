@@ -1,0 +1,68 @@
+@extends('admin.layout')
+@section('styles')
+    <link rel="stylesheet" href="{{ asset(env('PUBLIC_PATH', '') . 'css/laravel-pagination.css') }}">
+    <link rel="stylesheet" href="{{ asset(env('PUBLIC_PATH', '') . 'css/checkboxes.css') }}">
+    {additional_header}
+@endsection
+@section('main')
+    <div class="container">
+        <h2 class="text-center align-middle mt-4"><b>{model_name} Listesi</b></h2>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    {th_fields}
+                    <th class="text-center">Düzenle</th>
+                    <th class="text-center">Sil</th>
+                    <th class="text-end"><a href="{{ route('{model_name_slug}.create') }}" class="btn btn-sm btn-primary">Yeni {model_name} Ekle</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(${model_name_slug}s as ${model_name_slug})
+                    <tr{sortable}>
+                        {fields}
+                        <td class="text-center align-middle">
+                            <a href="{{ route('{model_name_slug}.edit', ${model_name_slug}->id) }}" class="btn btn-sm btn-warning">Düzenle</a>
+                        </td>
+                        <td class="text-center align-middle">
+                            <form id="{model_name_slug}-form-delete-{{ ${model_name_slug}->id }}" action="{{ route('{model_name_slug}.destroy', ${model_name_slug}->id) }}" method="post" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-danger" onclick="submitForm('{{ ${model_name_slug}->id }}')">Sil</button>
+                            </form>
+                        </td>
+                        <td class="text-center align-middle"></td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <!-- Display pagination links -->
+        <div class="pagination">
+            {{ ${model_name_slug}s->appends(request()->query())->links() }}
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function submitForm(id) {
+        Swal.fire({
+            title: 'Silmek istediğinden emin misin?',
+            text: 'Bu işlem geri alınamaz',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Hayır'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('{model_name_slug}-form-delete-' + id).submit();
+            }
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{additional_scripts}
+@endsection

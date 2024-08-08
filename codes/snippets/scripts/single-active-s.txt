@@ -1,0 +1,45 @@
+<script>
+    // Add event listener to checkboxes
+    document.querySelectorAll('input[type="checkbox"][name="active"]').forEach(function(checkbox, index, checkboxes) {
+        checkbox.addEventListener('change', function() {
+            var itemId = this.getAttribute('data-{model_name_slug}-id');
+            var originalChecked = !this.checked;
+
+            // Make AJAX request to update active status
+            axios.post('/admin/{model_title_lower}/active/' + itemId)
+                .then(function(response) {
+                    if (response.data.success) {
+                        console.log('Active status updated successfully');
+                        document.querySelectorAll('input[type="checkbox"][name="active"]').forEach(function(otherCheckbox) {
+                            if (otherCheckbox !== checkbox) {
+                                otherCheckbox.checked = false;
+                            }
+                        });
+
+                        // If the current checkbox is unchecked, find the next checked checkbox and check it
+                        if (originalChecked) {
+                            for (var i = 0; i < checkboxes.length; i++) {
+                                if (!checkboxes[i].checked && checkboxes[i] != checkbox) {
+                                    checkboxes[i].checked = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        console.error('Failed to update active status');
+                        checkbox.checked = originalChecked;
+                        Swal.fire({
+                            icon: 'error',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 5000
+                        });
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error updating active status:', error);
+                    checkbox.checked = originalChecked;
+                });
+        });
+    });
+</script>

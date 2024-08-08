@@ -1,0 +1,35 @@
+<script>
+    // Initialize SortableJS
+    var sortable = new Sortable(document.querySelector('.table tbody'), {
+        animation: 150, // Animation duration in milliseconds
+        handle: '.sortable-item', // Specify the handle for dragging
+        onEnd: function (evt) {
+            // Get the IDs of the dragged item and its new and previous positions
+            var itemId = evt.item.getAttribute('data-id');
+            var newIndex = evt.newIndex + 1; // Increment by 1 to match 1-based index
+            var oldIndex = evt.oldIndex + 1; // Increment by 1 to match 1-based index
+
+            // Send AJAX request to update the sort order
+            axios.post('{{ route("{model_name_slug}.move") }}', {
+                id: itemId,
+                currentSortOrder: oldIndex,
+                newSortOrder: newIndex
+            }).then(function (response) {
+                // console.log(response.data);
+
+                // Update the sort order numbers displayed in the table
+                var rows = document.querySelectorAll('.table tbody tr');
+                rows.forEach(function(row, index) {
+                    // Select the first cell (sort order cell) in the row
+                    var sortOrderCell = row.firstElementChild;
+                    if (sortOrderCell) {
+                        sortOrderCell.textContent = index + 1;
+                    }
+                });
+            }).catch(function (error) {
+                console.error(error);
+                // You can handle error response here
+            });
+        }
+    });
+</script>

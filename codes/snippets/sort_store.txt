@@ -1,0 +1,2 @@
+$lastSortOrder = {model_title}::max('sort_order') ?? 0;
+$validatedData['sort_order'] = $lastSortOrder + 1;

@@ -1,0 +1,11 @@
+<td class="text-center align-middle">
+    @if (${model_name_slug}->image_path != null)
+        <a href="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . ${model_name_slug}->image_path) }}" target="_blank">
+            <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . ${model_name_slug}->image_path) }}" style="max-width: 100px;max-height: 100px;">
+        </a>
+    @else
+        <a href="{{ asset(env('PUBLIC_PATH', '') . 'images/no_image.jpg') }}" target="_blank">
+            <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/no_image.jpg') }}" class="card-img-top object-fit-fill h-100" alt="no_image.jpg" title="..." style="max-width: 100px;max-height: 100px;">
+        </a>
+    @endif
+</td>

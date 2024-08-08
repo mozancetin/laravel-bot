@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Admin;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
+
+class AdminController extends Controller
+{
+    public function updateLastActivity(Request $request)
+    {
+        // Update last activity timestamp
+        $request->session()->put('last_activity', time());
+    }
+
+    /**
+     * Show the admin login form.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function showLoginForm()
+    {
+        // Check if an admin is already logged in
+        if (Auth::guard('admin')->check()) {
+            // Redirect to the admin form or another admin page
+            return redirect()->route('admin.dashboard'); // Adjust the route accordingly
+        }
+        return view('admin.login');
+    }
+
+    /**
+     * Handle an admin login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::guard('admin')->attempt($credentials)) {
+            $request->session()->regenerate();
+            $this->updateLastActivity($request);
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->back()->withErrors(['error' => 'Geçersiz giriş bilgileri']);
+    }
+
+    /**
+     * Log the admin out of the application.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function logout()
+    {
+        Auth::guard('admin')->logout();
+
+        return redirect()->route('admin.login');
+    }
+
+    /**
+     * Show the admin registration form.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function showRegistrationForm()
+    {
+        return view('admin.register');
+    }
+
+    /**
+     * Handle an admin registration request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function register(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins',
+            'password' => 'required|string|min:6|confirmed',
+            {image_store_validation}
+        ]);
+        $validatedData['password'] = bcrypt($validatedData['password']);
+        
+        {image_store}
+    
+        $admin = Admin::create($validatedData);
+        
+        Auth::guard('admin')->login($admin);
+    
+        return redirect()->route('admin.dashboard');
+    }
+
+    public function edit($id)
+    {
+        $admin = Admin::find($id);
+        return view('admin.admin-edit', ['admin' => $admin]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $admin = Admin::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:admins,email,' . $id,
+            'password' => 'nullable|string|min:6|confirmed',
+            {image_update_validation}
+        ]);
+
+        {image_update}
+
+        // Update other admin details
+        $admin->name = $validatedData['name'];
+        $admin->email = $validatedData['email'];
+        if ($request->has('password'))
+        {
+            $admin->password = bcrypt($validatedData['password']);
+        }        
+
+        // Save the changes
+        $admin->save();
+
+        // Redirect to a route (e.g., admin dashboard)
+        return redirect()->route('admin.dashboard');
+    }
+
+    public function destroy($id)
+    {
+        $admin = Admin::find($id);
+        {image_destroy}
+        $admin->delete();
+        return redirect()->route('admin.dashboard')->with('success', 'Admin başarıyla silindi!');
+    }
+
+    public function dashboard()
+    {
+        return view('admin.dashboard');
+    }
+
+    function generateRandomPassword($length = 8) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        return $password;
+    }
+}

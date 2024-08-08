@@ -1,0 +1,34 @@
+﻿{
+    "model_name": "Content",
+    "model_slug": "content",
+    "model_title": "Content",
+    "single_active": false,
+    "multiple_active": false,
+    "sorting": false,
+    "image": true,
+    "image_required": false,
+    "multiple_image": false,
+    "use_controller": true,
+    "fields": [
+        {
+            "field_slug": "title",
+            "field_name": "Başlık",
+            "type": "string",
+            "unsigned": false,
+            "nullable": false,
+            "default": false,
+            "slug": false,
+            "show": true
+        },
+        {
+            "field_slug": "content",
+            "field_name": "İçerik",
+            "type": "text",
+            "unsigned": false,
+            "nullable": false,
+            "default": false,
+            "slug": false,
+            "show": false
+        }
+    ]
+}

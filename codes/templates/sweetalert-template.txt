@@ -1,0 +1,7 @@
+<script>
+function submitForm(id) {
+    {sweet_items}
+    // If all validations pass, submit the form
+    document.getElementById(id).submit();
+}
+</script>

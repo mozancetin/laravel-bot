@@ -1,0 +1,81 @@
+@if(!isset(${model_name_slug}))
+    <div class="mb-3">
+        <label for="" class="form-label"><b>Fotoğraflar</b></label>
+        <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*">
+    </div>
+    <br>
+    <label for="" id="loading-bar-lbl" style="display: none;">
+        <p>Fotoğraflar yükleniyor, işlem bitene kadar lütfen sayfayı kapatmayınız...</p>
+    </label>
+    <div class="progress" role="progressbar" id="loading-bar" aria-label="" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="display: none;">
+        <div class="progress-bar" style="width: 0%">0%</div>
+    </div>
+    <br>
+    <div class="accordion" id="accordionImages" style="display: none;">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingImages">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="true" aria-controls="collapseImages">
+                    Seçilmiş Fotoğraflar
+                </button>
+            </h2>
+            <div id="collapseImages" class="accordion-collapse collapse show" aria-labelledby="headingImages" data-bs-parent="#accordionImages">
+                <div class="accordion-body">
+                    <div id="image-container" class="image-container justify-content-center">
+                        <div class="row sortable-list" id="image-div" style="width:100%;">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+@else
+    <div class="mb-3">
+        <label for="" class="form-label"><b>Fotoğraflar</b></label>
+        <input type="file" name="images[]" id="images" class="form-control" multiple accept="image/*">
+    </div>
+    <br>
+    <label for="" id="loading-bar-lbl" style="display: none;">
+        <p>Fotoğraflar yükleniyor, işlem bitene kadar lütfen sayfayı kapatmayınız...</p>
+    </label>
+    <div class="progress" role="progressbar" id="loading-bar" aria-label="" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="display: none;">
+        <div class="progress-bar" style="width: 0%">0%</div>
+    </div>
+    <br>            
+    <div class="accordion" id="accordionImages">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingImages">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseImages" aria-expanded="true" aria-controls="collapseImages">
+                    Seçilmiş Fotoğraflar
+                </button>
+            </h2>
+            <div id="collapseImages" class="accordion-collapse collapse show" aria-labelledby="headingImages" data-bs-parent="#accordionImages">
+                <div class="accordion-body">
+                    <div id="image-container" class="image-container justify-content-center">
+                        <div class="row sortable-list" id="image-div" style="width:100%;">
+                            @php
+                                $sortedImages = ${model_name_slug}->images->sortBy('sort_order');
+                            @endphp
+                            @foreach($sortedImages as $index => $image)
+                                <div class="col-md-4 mb-4">
+                                    <div class="card" data-image-id="{{ $image->id }}" data-sort-order="{{ $image->sort_order }}" data-image-path="{{ $image->image_path }}" style="max-width: 100%; height: 400px;cursor: all-scroll;">
+                                        <div style="max-width: 100%; height: 336px; display: flex; justify-content: center; align-items: center;">
+                                            <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $image->image_path) }}" class="card-img-top" alt="Image" style="max-width: 100%; max-height: 100%;">
+                                        </div>
+                                        
+                                        <div class="card-body">
+                                            <button class="btn btn-danger btn-sm btn-block" onclick="deleteImageWithName(event, '{{ $image->image_path }}')">Sil</button>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" class="image-id" value="{{ $image->id }}">
+                                </div>        
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+@endif

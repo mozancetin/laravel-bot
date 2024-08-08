@@ -1,0 +1,5 @@
+<li class="nav-item">
+    <a href="{{route('{model_name_slug}.list')}}" id="{model_title}" class="nav-link {{ request()->routeIs('{model_name_slug}.*') ? 'active' : 'text-white' }}">
+        {model_name}
+    </a>
+</li>

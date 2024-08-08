@@ -1,0 +1,1 @@
+ class="sortable-item" data-id="{{ ${model_name_slug}->id }}"

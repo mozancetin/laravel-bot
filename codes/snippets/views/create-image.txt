@@ -1,0 +1,7 @@
+<div class="mb-3">
+    <label for="image_path" class="form-label"><b>Kapak Fotoğrafı</b></label>
+    <input type="file" class="form-control" id="image_path" name="image_path">
+    @if(isset(${model_name_slug}) && ${model_name_slug}->image_path)
+        <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . ${model_name_slug}->image_path) }}" alt="Image" style="max-width: 200px; margin-top: 10px;">
+    @endif
+</div>

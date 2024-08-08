@@ -1,0 +1,1 @@
+<td class="text-center align-middle"><a href="{{ route('{model_name_slug}.images.list', ${model_name_slug}->id) }}">{{ ${model_name_slug}->images->count() }}</a></td>

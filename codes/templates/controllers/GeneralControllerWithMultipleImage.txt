@@ -1,0 +1,226 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\{model_title};
+use App\Models\{model_title}Image;
+use Illuminate\Support\Str;
+{additional_imports}
+
+class {model_controller} extends Controller
+{
+    {move_function}
+
+    public function index()
+    {
+        ${model_name_slug}s = {model_title}::orderBy('created_at', 'desc')->paginate(10);
+        return view('admin.{model_name_slug}-list', ['{model_name_slug}s' => ${model_name_slug}s]);
+    }
+
+    public function create()
+    {
+        return view('admin.{model_name_slug}-create');
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            {store_validation}
+        ]);
+
+        {additional_store_code}
+        {store_image_code}
+
+        ${model_name_slug} = {model_title}::create($validatedData);
+
+        $imageData = json_decode($request->input('imageData'), true);
+        foreach ($imageData as $image) {
+            {model_title}Image::create([
+                '{model_name_slug}_id' => ${model_name_slug}->id,
+                'image_path' => $image['imagePath'],
+                'sort_order' => $image['sortOrder'],
+            ]);
+        }
+
+        // \Illuminate\Support\Facades\Artisan::call('sitemap:generate');
+        return redirect()->route('{model_name_slug}.list')->with('success', '{model_name} başarıyla eklendi!');
+    }
+
+    public function edit($id)
+    {
+        ${model_name_slug} = {model_title}::find($id);
+        return view('admin.{model_name_slug}-create', ['{model_name_slug}' => ${model_name_slug}]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            {update_validation}
+        ]);
+
+        ${model_name_slug} = {model_title}::findOrFail($id);
+        {additional_update_code}
+        {update_image_code}
+
+        ${model_name_slug}->update($validatedData);
+        ${model_name_slug}->save();
+
+        ${model_name_slug}->images()->delete();
+
+        $imageData = json_decode($request->input('imageData'), true);
+        foreach ($imageData as $image) {
+            {model_title}Image::create([
+                '{model_name_slug}_id' => ${model_name_slug}->id,
+                'image_path' => $image['imagePath'],
+                'sort_order' => $image['sortOrder'],
+            ]);
+        }
+        // \Illuminate\Support\Facades\Artisan::call('sitemap:generate');
+        return redirect()->route('{model_name_slug}.list')->with('success', '{model_name} başarıyla güncellendi!');
+    }
+
+    public function destroy($id)
+    {
+        ${model_name_slug} = {model_title}::find($id);
+        {destroy_image_code}
+        $images = ${model_name_slug}->images();
+
+        foreach ($images as $image) {
+            $imagePath = public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $image->image_path);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $images->delete();
+        ${model_name_slug}->delete();
+        {additional_destroy_code}
+        // \Illuminate\Support\Facades\Artisan::call('sitemap:generate');
+        return redirect()->route('{model_name_slug}.list')->with('success', '{model_name} başarıyla silindi!');
+    }
+
+    {additional_functions}
+
+    public function imagesIndex(${model_name_slug}_id)
+    {
+        ${model_name_slug} = {model_title}::where('id', ${model_name_slug}_id)->first();
+        return view('admin.{model_name_slug}-images-list', ['{model_name_slug}' => ${model_name_slug}]);
+    }
+
+    public function imagesStore(Request $request, ${model_name_slug}_id)
+    {
+        $request->validate([
+            'images.*' => 'image|mimes:jpeg,png,jpg,svg'
+        ]);
+
+        $max = {model_title}::where('id', ${model_name_slug}_id)->first()->images()->count();
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image_path) {
+                $originalName = $image_path->getClientOriginalName();
+                
+                $imageName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME), '-') . '_' . time() . '.' . $image_path->extension();
+                $image_path->move(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}'), $imageName);
+                {model_title}Image::create([
+                    '{model_name_slug}_id' => ${model_name_slug}_id,
+                    'image_path' => $imageName,
+                    'sort_order' => $max + $index + 1,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Fotoğraflar Başarıyla Eklendi!');
+    }
+
+    public function imagesMove(Request $request)
+    {
+        $id = $request->id;
+        $currentSortOrder = $request->currentSortOrder;
+        $newSortOrder = $request->newSortOrder;
+
+        $image = {model_title}Image::find($id);
+        $image->update(['sort_order' => 0]);
+        
+        $direction = ($newSortOrder < $currentSortOrder) ? 'up' : 'down';
+    
+        if ($direction === 'up') {
+            {model_title}Image::whereBetween('sort_order', [$newSortOrder, $currentSortOrder - 1])
+                ->where('id', '!=', $image->id)
+                ->orderByDesc('sort_order')
+                ->get()
+                ->each(function ($item) {
+                    $item->increment('sort_order');
+                });
+        } else {
+            {model_title}Image::whereBetween('sort_order', [$currentSortOrder + 1, $newSortOrder])
+                ->where('id', '!=', $image->id) 
+                ->orderBy('sort_order')
+                ->get()
+                ->each(function ($item) {
+                    $item->decrement('sort_order');
+                });
+        }
+    
+        $image->update(['sort_order' => $newSortOrder]);
+        return response()->json(['success' => true]);
+    }
+
+    public function imagesDelete(${model_name_slug}_id, $id)
+    {
+        ${model_name_slug} = {model_title}::findOrFail(${model_name_slug}_id);
+        if (${model_name_slug}->images->count() < 2)
+        {
+            return response()->json(['success' => false, 'message' => 'Son fotoğraf silinemez!']);
+        }
+
+        $image = {model_title}Image::findOrFail($id);
+
+        if (file_exists(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $image->image_path))) {
+            unlink(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $image->image_path));
+        }
+
+        $image->delete();
+        session()->flash('success', 'Fotoğraf Başarıyla Silindi');
+        return response()->json(['success' => true]);
+    }
+
+    public function imagesUpload(Request $request)
+    {
+        $request->validate([
+            'images.*' => 'image|mimes:jpeg,png,jpg,svg'
+        ]);
+
+        $uploadedImages = [];
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $originalName = $image->getClientOriginalName();
+
+                $imageName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME), '-') . '_' . time() . '.' . $image->extension();
+                $image->move(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}'), $imageName);
+                
+                $uploadedImages[] = [
+                    'imageId' => null,
+                    'imagePath' => $imageName,
+                    'sortOrder' => $index + 1,
+                ];
+            }
+        }
+
+        return response()->json(['success' => true, 'images' => $uploadedImages]);
+    }
+
+    public function imagesDeleteWithPath($imagePath)
+    {
+        if (file_exists(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $imagePath))) {
+            unlink(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $imagePath));
+        }
+
+        $image = {model_title}Image::where('image_path', $imagePath)->first();
+        if($image)
+        {
+            $image->delete();
+        }
+        return response()->json(['success' => true]);
+    }
+}

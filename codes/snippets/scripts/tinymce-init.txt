@@ -1,0 +1,25 @@
+<script src="{{ asset(env('PUBLIC_PATH', '') . 'js/tinymce/tinymce.min.js')}}" referrerpolicy="origin"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        tinymce.init({
+            selector: '.tinymce',
+            language: 'tr',
+            height: 400,
+            resize: false,
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+                'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount', 'link'
+            ],
+            toolbar: 'undo redo | formatselect | ' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent' +
+                'link | removeformat',
+
+            setup: function (editor) {
+            editor.on('change', function () {
+                tinymce.triggerSave();
+            });
+            },
+        });
+    });
+</script>

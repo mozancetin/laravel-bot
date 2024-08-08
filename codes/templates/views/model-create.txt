@@ -1,0 +1,40 @@
+@extends('admin.layout')
+@section('styles')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset(env('PUBLIC_PATH', '') . 'css/checkboxes.css') }}">
+    <link rel="stylesheet" href="{{ asset(env('PUBLIC_PATH', '') . 'css/multi-image.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {additional_header}
+@endsection
+
+@section('main')
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+<div class="container mt-4">
+    <h2>{{ isset(${model_name_slug}) ? '{model_name} Düzenle' : 'Yeni {model_name} Ekle' }}</h2>
+
+    <form id="{model_name_slug}-form" action="{{ isset(${model_name_slug}) ? route('{model_name_slug}.update', ${model_name_slug}->id) : route('{model_name_slug}.store') }}" method="post" enctype="multipart/form-data">
+        @csrf
+        @if (isset(${model_name_slug}))
+            @method('PUT')
+        @endif
+
+        {items}
+        
+        <button type="button" class="btn btn-primary" onclick="submitForm('{model_name_slug}-form')">{{ isset(${model_name_slug}) ? 'Düzenle' : 'Yeni {model_name} Ekle' }}</button>
+        <br><br>
+    </form>
+</div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{additional_scripts}
+@endsection

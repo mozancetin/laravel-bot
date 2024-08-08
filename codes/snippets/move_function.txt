@@ -1,0 +1,37 @@
+public function moveWithID(Request $request)
+{
+    $id = $request->id;
+    $currentSortOrder = $request->currentSortOrder;
+    $newSortOrder = $request->newSortOrder;
+
+    ${model_name_slug} = {model_title}::find($id);
+    ${model_name_slug}->update(['sort_order' => 0]);
+    
+    // Determine the direction of the sort
+    $direction = ($newSortOrder < $currentSortOrder) ? 'up' : 'down';
+
+    // Adjust the sort order for {model_name_slug}s affected by the move
+    if ($direction === 'up') {
+        // Move items up: Increment sort_order for items between new and current sort orders
+        {model_title}::whereBetween('sort_order', [$newSortOrder, $currentSortOrder - 1])
+            ->where('id', '!=', ${model_name_slug}->id) // Exclude the current {model_name_slug}
+            ->orderByDesc('sort_order') // Order by sort_order in descending order
+            ->get()
+            ->each(function ($item) {
+                $item->increment('sort_order');
+            });
+    } else {
+        // Move items down: Decrement sort_order for items between current and new sort orders
+        {model_title}::whereBetween('sort_order', [$currentSortOrder + 1, $newSortOrder])
+            ->where('id', '!=', ${model_name_slug}->id) // Exclude the current {model_name_slug}
+            ->orderBy('sort_order') // Order by sort_order in ascending order
+            ->get()
+            ->each(function ($item) {
+                $item->decrement('sort_order');
+            });
+    }
+
+    // Update the sort order of the current {model_name_slug} to the final desired value
+    ${model_name_slug}->update(['sort_order' => $newSortOrder]);
+    return response()->json(['success' => true]);
+}

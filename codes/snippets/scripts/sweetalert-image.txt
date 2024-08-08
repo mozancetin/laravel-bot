@@ -1,0 +1,12 @@
+var image_path = document.getElementById('image_path').value;
+var {model_name_slug} = document.getElementById('{model_name_slug}-value').value;
+if (!image_path && !{model_name_slug}) {
+    // Show SweetAlert2 error message
+    Swal.fire({
+        icon: 'error',
+        title: 'Lütfen tüm alanları doldurun!',
+        text: 'İmaj alanı boş bırakılamaz.',
+        confirmButtonText: 'Tamam',
+    });
+    return; // Stop form submission
+}

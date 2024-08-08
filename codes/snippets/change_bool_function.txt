@@ -1,0 +1,8 @@
+public function change{field_title}($id)
+{
+    ${model_name_slug} = {model_title}::find($id);
+    ${field_slug} = ${model_name_slug}->{field_slug} ? false : true;
+    ${model_name_slug}->update(['{field_slug}' => ${field_slug}]);
+
+    return response()->json(['success' => true]);
+}

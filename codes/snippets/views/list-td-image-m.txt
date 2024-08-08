@@ -1,0 +1,14 @@
+@php
+    $sortedImages = ${model_name_slug}->images->sortBy('sort_order');
+@endphp
+<td class="text-center align-middle">
+    @if ($sortedImages->first() != null)
+        <a href="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $sortedImages->first()->image_path) }}" target="_blank">
+            <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/resized/' . pathinfo($sortedImages->first()->image_path, PATHINFO_FILENAME) . '_resized100px.' . pathinfo($sortedImages->first()->image_path, PATHINFO_EXTENSION)) }}" alt="Image" style="max-width: 100px;max-height: 100px;">
+        </a>
+    @else
+        <a href="{{ asset(env('PUBLIC_PATH', '') . 'images/no_image.jpg') }}" target="_blank">
+            <img src="{{ asset(env('PUBLIC_PATH', '') . 'images/no_image.jpg') }}" class="card-img-top object-fit-fill h-100" alt="no_image.jpg" title="..." style="max-width: 100px;max-height: 100px;">
+        </a>
+    @endif
+</td>

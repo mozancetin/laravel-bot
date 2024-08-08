@@ -1,0 +1,1 @@
+Route::post('/{model_title_lower}/{field_slug}/{id}', [{model_title}Controller::class, 'change{field_title}'])->name('{model_name_slug}.{field_slug}');

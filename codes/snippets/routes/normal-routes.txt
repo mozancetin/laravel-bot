@@ -1,0 +1,6 @@
+Route::get('/{model_title_lower}', [{model_title}Controller::class, 'index'])->name('{model_name_slug}.list');
+Route::get('/{model_title_lower}/create', [{model_title}Controller::class, 'create'])->name('{model_name_slug}.create');
+Route::post('/{model_title_lower}/create', [{model_title}Controller::class, 'store'])->name('{model_name_slug}.store');
+Route::get('/{model_title_lower}/edit/{id}', [{model_title}Controller::class, 'edit'])->name('{model_name_slug}.edit');
+Route::put('/{model_title_lower}/edit/{id}', [{model_title}Controller::class, 'update'])->name('{model_name_slug}.update');
+Route::delete('/{model_title_lower}/delete/{id}', [{model_title}Controller::class, 'destroy'])->name('{model_name_slug}.destroy');

@@ -1,0 +1,54 @@
+﻿{
+    "model_name": "All In",
+    "model_slug": "all_in",
+    "model_title": "AllIn",
+    "single_active": true,
+    "multiple_active": false,
+    "sorting": true,
+    "image": true,
+    "image_required": true,
+    "multiple_image": false,
+    "use_controller": true,
+    "fields": [
+        {
+            "field_slug": "str_field",
+            "field_name": "String Field",
+            "type": "string",
+            "unsigned": false,
+            "nullable": false,
+            "default": false,
+            "slug": true,
+            "show": true
+        },
+        {
+            "field_slug": "text_field",
+            "field_name": "Text Field",
+            "type": "text",
+            "unsigned": false,
+            "nullable": true,
+            "default": false,
+            "slug": false,
+            "show": true
+        },
+        {
+            "field_slug": "int_field",
+            "field_name": "Int Field",
+            "type": "integer",
+            "unsigned": true,
+            "nullable": true,
+            "default": false,
+            "slug": false,
+            "show": true
+        },
+        {
+            "field_slug": "bool_field",
+            "field_name": "Boolean Field",
+            "type": "boolean",
+            "unsigned": false,
+            "nullable": false,
+            "default": true,
+            "slug": false,
+            "show": true
+        }
+    ]
+}

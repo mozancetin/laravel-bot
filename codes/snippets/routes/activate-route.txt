@@ -1,0 +1,1 @@
+Route::post('/{model_title_lower}/active/{id}', [{model_title}Controller::class, 'changeActive'])->name('{model_name_slug}.active');

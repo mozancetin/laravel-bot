@@ -1,0 +1,9 @@
+if (tinymce.get('{field_slug}').getContent().trim() === '') {
+    Swal.fire({
+        icon: 'error',
+        title: 'Lütfen tüm alanları doldurun!',
+        text: '{field_name} alanı boş bırakılamaz.',
+        confirmButtonText: 'Tamam',
+    });
+    return; // Show an alert or provide feedback
+}

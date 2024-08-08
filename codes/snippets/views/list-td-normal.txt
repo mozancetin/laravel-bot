@@ -1,0 +1,1 @@
+<td class="text-center align-middle">{{ ${model_name_slug}->{field_slug} }}</td>

@@ -1,0 +1,8 @@
+public function changeActive($id)
+{
+    ${model_name_slug} = {model_title}::find($id);
+    $active = ${model_name_slug}->active ? false : true;
+    ${model_name_slug}->update(['active' => $active]);
+
+    return response()->json(['success' => true]);
+}

@@ -1,0 +1,249 @@
+<script>var imageData = [];</script>
+<script>
+    function fetchImages() {
+        var imageContainer = document.getElementById('image-div');
+        imageContainer.innerHTML = '';
+
+        imageData.forEach(function(image) {
+            var colDiv = document.createElement('div');
+            colDiv.classList.add('col-md-4');
+            colDiv.classList.add('mb-4');
+
+            var cardDiv = document.createElement('div');
+            cardDiv.classList.add('card');
+            cardDiv.setAttribute('data-image-id', image.imageId);
+            cardDiv.setAttribute('data-sort-order', image.sortOrder);
+            cardDiv.setAttribute('data-image-path', image.imagePath);
+            cardDiv.style.maxWidth = '100%';
+            cardDiv.style.height = '400px';
+            cardDiv.style.cursor = 'all-scroll';
+
+            var imgContainerDiv = document.createElement('div');
+            imgContainerDiv.style.maxWidth = '100%';
+            imgContainerDiv.style.height = '336px';
+            imgContainerDiv.style.display = 'flex';
+            imgContainerDiv.style.justifyContent = 'center';
+            imgContainerDiv.style.alignItems = 'center';
+
+            var img = document.createElement('img');
+            img.src = '{{ asset(env("PUBLIC_PATH", "") . "images/{model_name_slug}/") }}' + '/' + image.imagePath;
+            img.classList.add('card-img-top');
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.alt = image.imagePath;
+
+            imgContainerDiv.appendChild(img);
+
+            var cardBodyDiv = document.createElement('div');
+            cardBodyDiv.classList.add('card-body');
+
+            var deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = 'Sil';
+            deleteBtn.classList.add('btn');
+            deleteBtn.classList.add('btn-danger');
+            deleteBtn.classList.add('btn-sm');
+            deleteBtn.classList.add('btn-block');
+            deleteBtn.addEventListener('click', function() {
+                event.stopPropagation();
+                event.preventDefault();
+                deleteImageWithName(event, image.imagePath);
+            });
+
+            cardBodyDiv.appendChild(deleteBtn);
+
+            cardDiv.appendChild(imgContainerDiv);
+            cardDiv.appendChild(cardBodyDiv);
+
+            colDiv.appendChild(cardDiv);
+
+            var hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.classList.add('image-id');
+            hiddenInput.value = image.imageId;
+
+            colDiv.appendChild(hiddenInput);
+
+            // Append the entire structure to the parent element
+            imageContainer.appendChild(colDiv);
+        });
+
+
+        // Initialize SortableJS after rendering images
+        initializeSortable();
+    }
+
+    // Function to delete an image
+    function deleteImageWithName(event, imagePath) {
+        event.preventDefault();
+        event.stopPropagation();
+        var indexToDelete = imageData.findIndex(function(image) {
+            return image.imagePath === imagePath;
+        });
+
+        if (indexToDelete !== -1) {
+            // Remove the image from the images array
+            var deletedImage = imageData.splice(indexToDelete, 1)[0];
+            // console.log("Image deleted from list:", deletedImage);
+
+            // Reorder sort orders for remaining images
+            imageData.forEach(function(image, index) {
+                image.sortOrder = index + 1;
+            });
+
+            var imageDataInput = document.getElementById('imageData');
+            imageDataInput.value = JSON.stringify(imageData);
+            axios.post(`/admin/{model_title_lower}/images/delete/${deletedImage.imagePath}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                withCredentials: true,
+                _method: 'delete'
+            })
+            .then(function(response) {
+                fetchImages();
+            })
+            .catch(function(error) {
+                console.error(error);
+            });
+        } else {
+            console.error("Image not found in the images list.");
+        }
+    }
+
+
+    // Function to initialize SortableJS for image sorting
+    function initializeSortable() {
+        var imageContainer = document.getElementById('image-div');
+
+        // Initialize SortableJS
+        new Sortable(imageContainer, {
+            animation: 150,
+            handle: '.card', // Use the image card itself as the handle for dragging
+            onEnd: function(event) {
+                //Get all image cards
+                imageData = [];
+                var images = document.querySelectorAll('.card');
+
+                // Iterate over the image cards to update their sort order
+                images.forEach(function(image, index) {
+                    // Update the sort order attribute of the image card
+                    imageData[imageData.length] = {imageId: image.dataset.imageId, imagePath: image.dataset.imagePath, sortOrder: index + 1}
+
+                });
+
+                // console.log(imageData);
+                var imageDataInput = document.getElementById('imageData');
+                imageDataInput.value = JSON.stringify(imageData);
+                fetchImages();
+                // console.log(imageData);
+            }
+        });
+    }
+</script>
+@if (isset(${model_name_slug}))
+    <script>
+        function loadImages()
+        {
+            var images = document.querySelectorAll('.card');
+            imageData = [];
+
+            images.forEach(function(image) {
+                // console.log(image.dataset);
+                var imageId = image.dataset.imageId; // Get the image name
+                var imagePath = image.dataset.imagePath; // Get the image name
+                var sortOrder = parseInt(image.dataset.sortOrder); // Get the sort order
+                // Add the image data to the array
+                imageData[imageData.length] = { imageId: imageId, imagePath: imagePath, sortOrder: sortOrder };
+            });
+            // console.log(nextSortOrder);
+            // Update the hidden input field value with the JSON data
+            document.getElementById('imageData').value = JSON.stringify(imageData);
+            //console.log(imageData);
+        }
+
+        loadImages();
+        initializeSortable();
+    </script>
+    <script>
+        document.getElementById('images').addEventListener('change', function(event) {
+            var beforeSortOrder = imageData.length;
+            document.getElementById('loading-bar').style.display = 'block';
+            document.getElementById('loading-bar-lbl').style.display = 'block';
+            var form = document.getElementById('{model_name_slug}-form');
+            var formData = new FormData(form);
+            // Send a POST request to the server to upload the images
+            axios.post('{{ route("{model_name_slug}.images.upload") }}', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                method: 'POST',
+                onUploadProgress: function(progressEvent) {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    var progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = percentCompleted + '%';
+                    progressBar.textContent = percentCompleted + '%';
+                }
+            })
+            .then(function(response) {
+                response.data.images.forEach(key => {
+                    imageData[imageData.length] = {imageId: key.imageId, imagePath: key.imagePath, sortOrder: beforeSortOrder + key.sortOrder};
+                });
+
+                document.getElementById('imageData').value = JSON.stringify(imageData);
+                fetchImages();
+                var imageInput = document.getElementById('images');
+                imageInput.value = ''; // Clear the value
+                document.getElementById('loading-bar').style.display = 'none';
+                document.getElementById('loading-bar-lbl').style.display = 'none';
+            })
+            .catch(function(error) {
+                // Handle upload error
+                console.error(error);
+                document.getElementById('loading-bar').style.display = 'none';
+                document.getElementById('loading-bar-lbl').style.display = 'none';
+            });
+        });
+    </script>
+@else
+    <script>
+        document.getElementById('images').addEventListener('change', function(event) {
+            accordionImages = document.getElementById('accordionImages');
+            accordionImages.style.display = "";
+            document.getElementById('loading-bar').style.display = 'block';
+            document.getElementById('loading-bar-lbl').style.display = 'block';
+            var form = document.getElementById('{model_name_slug}-form');
+            var formData = new FormData(form);
+            // Send a POST request to the server to upload the images
+            axios.post('{{ route("{model_name_slug}.images.upload") }}', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function(progressEvent) {
+                    var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    var progressBar = document.querySelector('.progress-bar');
+                    progressBar.style.width = percentCompleted + '%';
+                    progressBar.textContent = percentCompleted + '%';
+                }
+            })
+            .then(function(response) {
+                response.data.images.forEach(key => {
+                    imageData[imageData.length] = {imageId: key.imageId, imagePath: key.imagePath, sortOrder: key.sortOrder};
+                });
+
+                document.getElementById('imageData').value = JSON.stringify(imageData);
+                fetchImages();
+                var imageInput = document.getElementById('images');
+                imageInput.value = ''; // Clear the value
+                document.getElementById('loading-bar').style.display = 'none';
+                document.getElementById('loading-bar-lbl').style.display = 'none';
+            })
+            .catch(function(error) {
+                // Handle upload error
+                console.error(error);
+                document.getElementById('loading-bar').style.display = 'none';
+                document.getElementById('loading-bar-lbl').style.display = 'none';
+            });
+        });
+    </script>
+@endif

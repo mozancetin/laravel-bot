@@ -1,0 +1,4 @@
+<div class="mb-3">
+    <label for="{field_slug}" class="form-label"><b>{field_name}</b></label>
+    <input type="number" class="form-control" id="{field_slug}" name="{field_slug}" min="0" value="{{ isset(${model_name_slug}) ? ${model_name_slug}->{field_slug} : '' }}" {is_required}>
+</div>

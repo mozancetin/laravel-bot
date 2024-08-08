@@ -1,0 +1,4 @@
+public function {relation_slug}()
+{
+    return $this->belongsTo({relation_class_title}::class, '{relation_slug_id}_id');
+}

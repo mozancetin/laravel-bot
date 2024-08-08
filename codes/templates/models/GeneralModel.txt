@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
+class {model_title} extends Model
+{
+    use HasFactory;
+
+    protected $table = '{model_name_slug}s';
+
+    protected $fillable = [
+        {fillable}
+    ];
+
+    {additional_functions}
+
+    {slug}
+}

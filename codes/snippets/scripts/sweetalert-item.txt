@@ -1,0 +1,10 @@
+var {field_slug} = document.getElementById('{field_slug}').value;
+if (!{field_slug}) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Lütfen tüm alanları doldurun!',
+        text: '{field_name} alanı boş bırakılamaz.',
+        confirmButtonText: 'Tamam',
+    });
+    return;
+}

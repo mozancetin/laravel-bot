@@ -1,0 +1,21 @@
+<script>
+    // Add event listener to checkboxes
+    document.querySelectorAll('input[type="checkbox"][name="{field_slug}"]').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            var Id = this.getAttribute('data-{model_name_slug}-id');
+
+            // Make AJAX request to update {field_slug} status
+            axios.post('/admin/{model_title_lower}/{field_slug}/' + Id)
+                .then(function(response) {
+                    if (response.data.success) {
+                        console.log('{field_slug} status updated successfully');
+                    } else {
+                        console.error('Failed to update {field_slug} status');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error updating {field_slug} status:', error);
+                });
+        });
+    });
+</script>

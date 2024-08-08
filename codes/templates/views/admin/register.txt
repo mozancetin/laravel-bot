@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Kayıt</title>
+<style>
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+  }
+
+  .container {
+    width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .register-form {
+    text-align: center;
+  }
+
+  .register-form h3 {
+    margin-bottom: 20px;
+  }
+
+  .register-form input[type="text"],
+  .register-form input[type="email"],
+  .register-form input[type="password"],
+  .register-form input[type="file"] {
+    width: 250px; /* Adjusted width for input fields */
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .password-container {
+    position: relative;
+  }
+
+  .password-container input[type="password"] {
+    padding-right: 40px; /* Add space for the show/hide icon */
+  }
+
+  .password-container .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
+  .register-form button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .register-form a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  @if(session()->has('success'))
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          Swal.fire({
+              icon: 'success',
+              title: '{{ session('success') }}',
+              showConfirmButton: false,
+              timer: 5000
+          });
+      });
+  </script>
+  @endif
+  @if(session()->has('error'))
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          Swal.fire({
+              icon: 'error',
+              title: '{{ session('error') }}',
+              showConfirmButton: false,
+              timer: 5000
+          });
+      });
+  </script>
+  @endif
+  @if ($errors->any())
+      <div class="alert alert-danger">
+          <ul>
+              @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+              @endforeach
+          </ul>
+      </div>
+  @endif
+  <div class="container">
+    <div class="register-form">
+      <h3>Admin Kayıt</h3>
+      <form method="POST" action="{{ route('admin.register.submit') }}" enctype="multipart/form-data">
+        @csrf
+        <input type="text" placeholder="Ad Soyad" name="name" required>
+        <input type="email" placeholder="E-Posta" name="email" required>
+        <input type="password" placeholder="Şifre" name="password" id="password" required>
+        <div class="password-container">
+          <span class="toggle-password" onclick="togglePasswordVisibility()">Göster</span>
+        </div>
+        <input type="password" placeholder="Şifreyi Onayla" id="password_confirmation" name="password_confirmation" required>
+        <br>
+        {admin_register_image}
+        <button type="button" onclick="generateRandomPassword()">Rastgele Şifre Oluştur</button>
+        <br><br>
+        <button type="submit">Kayıt Ol</button>
+      </form>
+    </div>
+  </div>
+
+<script>
+  function generateRandomPassword() {
+    var passwordInput = document.getElementById('password');
+    var confirmInput = document.getElementById('password_confirmation');
+    var toggleButton = document.querySelector('.toggle-password');
+    var characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var passwordLength = 12;
+    var password = '';
+    for (var i = 0; i < passwordLength; i++) {
+      password += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    document.getElementById('password').value = password;
+    document.getElementById('password_confirmation').value = password;
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      confirmInput.type = 'text';
+      toggleButton.textContent = 'Gizle';
+    }
+  }
+
+  function togglePasswordVisibility() {
+    var passwordInput = document.getElementById('password');
+    var confirmInput = document.getElementById('password_confirmation');
+    var toggleButton = document.querySelector('.toggle-password');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      confirmInput.type = 'text';
+      toggleButton.textContent = 'Gizle';
+    } else {
+      passwordInput.type = 'password';
+      confirmInput.type = 'password';
+      toggleButton.textContent = 'Göster';
+    }
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>

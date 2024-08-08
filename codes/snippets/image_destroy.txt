@@ -1,0 +1,18 @@
+// Get the filename without extension
+$filenameWithoutExtension = pathinfo(${model_name_slug}->image_path, PATHINFO_FILENAME);
+
+// Get the extension
+$extension = pathinfo(${model_name_slug}->image_path, PATHINFO_EXTENSION);
+
+// Form the resized image filename
+$resizedImageName100px = $filenameWithoutExtension . '_resized100px.' . $extension;
+// Delete the resized image
+if (file_exists(public_path('public/images/{model_name_slug}/resized/' . $resizedImageName100px))) {
+    unlink(public_path('public/images/{model_name_slug}/resized/' . $resizedImageName100px));
+}
+
+// Delete the associated image file
+$imagePath = public_path('public/images/{model_name_slug}/' . ${model_name_slug}->image_path);
+if (file_exists($imagePath)) {
+    unlink($imagePath);
+}

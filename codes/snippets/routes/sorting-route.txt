@@ -1,0 +1,1 @@
+Route::post('/{model_title_lower}/move', [{model_title}Controller::class, 'moveWithID'])->name('{model_name_slug}.move');

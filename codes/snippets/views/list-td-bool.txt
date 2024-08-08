@@ -1,0 +1,8 @@
+<td class="text-center align-middle">
+    <div class="checkbox-container">
+        <label class="checkbox-container">
+            <input type="checkbox" name="{field_slug}" data-{model_name_slug}-id="{{ ${model_name_slug}->id }}" {{ isset(${model_name_slug}) && ${model_name_slug}->{field_slug} ? 'checked' : '' }}>
+            <span class="slider round"></span>
+        </label>
+    </div>
+</td>

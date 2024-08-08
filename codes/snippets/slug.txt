@@ -1,0 +1,38 @@
+protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (${model_slug}) {
+            $originalSlug = $slug = Str::slug(${model_slug}->{slug_field});
+            
+            // Check if the slug already exists in the database
+            $count = static::where('slug', $slug)->count();
+            
+            // If the slug exists, append a unique identifier to it
+            $i = 1;
+            while ($count > 0) {
+                $slug = $originalSlug . '-' . $i;
+                $count = static::where('slug', $slug)->count();
+                $i++;
+            }
+
+            ${model_slug}->slug = $slug;
+        });
+
+        static::updating(function (${model_slug}) {
+            $originalSlug = $slug = Str::slug(${model_slug}->{slug_field});
+            
+            // Check if the slug already exists in the database, excluding the current model
+            $count = static::where('slug', $slug)->where('id', '!=', ${model_slug}->id)->count();
+            
+            // If the slug exists, append a unique identifier to it
+            $i = 1;
+            while ($count > 0) {
+                $slug = $originalSlug . '-' . $i;
+                $count = static::where('slug', $slug)->where('id', '!=', ${model_slug}->id)->count();
+                $i++;
+            }
+
+            ${model_slug}->slug = $slug;
+        });
+    }

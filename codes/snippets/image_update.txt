@@ -1,0 +1,41 @@
+// If a new image is uploaded, handle the upload process
+if ($request->hasFile('image_path')) {
+    if (file_exists(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . ${model_name_slug}->image_path))) {
+        unlink(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . ${model_name_slug}->image_path));
+    }
+
+    $filenameWithoutExtension = pathinfo(${model_name_slug}->image_path, PATHINFO_FILENAME);
+
+    // Get the extension
+    $extension = pathinfo(${model_name_slug}->image_path, PATHINFO_EXTENSION);
+
+    // Form the resized image filename
+    $resizedImageName100px = $filenameWithoutExtension . '_resized100px.' . $extension;
+    // Delete the resized image
+    if (file_exists(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/resized/' . $resizedImageName100px))) {
+        unlink(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/resized/' . $resizedImageName100px));
+    }
+
+    // Get the original file name
+    $originalName = $request->file('image_path')->getClientOriginalName();
+    $imageName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME), '-') . '_' . time() . '.' . $request->file('image_path')->getClientOriginalExtension();
+    $request->file('image_path')->move(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}'), $imageName);
+    ${model_name_slug}->image_path = $imageName;
+    $validatedData['image_path'] = $imageName;
+
+    $resizedImage100px = Image::make(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/' . $imageName));
+    $resizedImage100px->resize(100, 100, function ($constraint) {
+        $constraint->aspectRatio(); // Maintain aspect ratio
+        $constraint->upsize(); // Prevent upsizing
+    });
+
+    // Get the filename without extension
+    $filenameWithoutExtension = pathinfo($imageName, PATHINFO_FILENAME);
+
+    // Get the extension
+    $extension = pathinfo($imageName, PATHINFO_EXTENSION);
+
+    // Save the resized image with _resized appended to the filename
+    $resizedImageName100px = $filenameWithoutExtension . '_resized100px.' . $extension;
+    $resizedImage100px->save(public_path(env('PUBLIC_PATH', '') . 'images/{model_name_slug}/resized/' . $resizedImageName100px));
+}

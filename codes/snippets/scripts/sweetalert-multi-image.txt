@@ -1,0 +1,10 @@
+if (imageData.length < 1) {
+    // Show SweetAlert2 error message
+    Swal.fire({
+        icon: 'error',
+        title: 'Lütfen tüm alanları doldurun!',
+        text: 'En az 1 fotoğraf yüklemeniz gerekmektedir.',
+        confirmButtonText: 'Tamam',
+    });
+    return; // Stop form submission
+}

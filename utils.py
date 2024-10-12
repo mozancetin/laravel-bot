@@ -58,9 +58,12 @@ def read(path : str) -> str:
         text = f.read()
     return text
 
-def write(text : str, path : str) -> None:
+def write(text : str, path : str, clean : bool = False) -> None:
     with open(path, 'w', encoding='utf-8') as f:
-        f.write(cleanup(text))
+        if clean:
+            f.write(cleanup(text))
+        else:
+            f.write(text)
 
 def slug(text : str) -> str:
     return slugify(text, separator="_")
